@@ -1,7 +1,11 @@
 class RestaurantsController < ApplicationController
-    def index
+    before_action :authenticate_user!
+    
+    
+    
+    # def index
         # @restaurants = Restaurant.all
-    end
+    # end
 
     # def new
     #     @restaurant = Restaurant.new
