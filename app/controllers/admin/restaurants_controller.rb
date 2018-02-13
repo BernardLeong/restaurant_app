@@ -1,28 +1,11 @@
 class Admin::RestaurantsController < ApplicationController
     before_action :authenticate_user!
     before_action :authenticate_admin
-    before_action :set_restaurant, only: [:show, :edit]
-    before_action :set_restaurant, only: [:show, :edit, :update]
+    before_action :set_restaurant, only: [:show, :edit, :update , :destroy]
 
-    def update
-        if @restaurant.update(restaurant_params)
-            flash[:notice] = "Restaurant was successfully updated"
-            redirect_to admin_restaurants_path(@restaurant)
-        else
-            flash.now[:alert] = "Restaurant has failed to update"
-            render :edit
-        end
-    end
-
-    def destroy
-        @restaurant.destroy
-        redirect_to admin_restaurants_path
-        flash[:alert] = "Restaurant was deleted"
     
-    end
-
     def index
-        @restaurants = Restaurant.all
+        @restaurants = Restaurant.page(params[:page]).per(10)
     end
 
     def new
@@ -47,13 +30,33 @@ class Admin::RestaurantsController < ApplicationController
     def edit
 
     end
+
+    def update
+        if @restaurant.update(restaurant_params)
+            flash[:notice] = "Restaurant was successfully updated"
+            redirect_to admin_restaurants_path(@restaurant)
+        else
+            flash.now[:alert] = "Restaurant has failed to update"
+            render :edit
+        end
+    end
+
+    def destroy
+        @restaurant.destroy
+        redirect_to admin_restaurants_path
+        flash[:alert] = "Restaurant was deleted"
+    end
+
         private
+
+    def restaurant_params
+        params.require(:restaurant).permit(:name, :opening_hours, :tel, :address, :description, :image)
+    end
+        
+        
     
     def set_restaurant
         @restaurant = Restaurant.find(params[:id])
     end
         
-    def restaurant_params
-            params.require(:restaurant).permit(:name , :opening_hours , :tel , :address , :description)
-    end
 end
